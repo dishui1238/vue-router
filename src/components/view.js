@@ -4,16 +4,16 @@ import { handleRouteEntered } from '../util/route'
 
 export default {
   name: 'RouterView',
-  functional: true,
+  functional: true, // 函数式组件
   props: {
     name: {
       type: String,
-      default: 'default'
-    }
+      default: 'default',
+    },
   },
-  render (_, { props, children, parent, data }) {
+  render(_, { props, children, parent, data }) {
     // used by devtools to display a router-view badge
-    data.routerView = true
+    data.routerView = true // 标记 router-view 组件
 
     // directly use parent context's createElement() function
     // so that components rendered by router-view can resolve named slots
@@ -24,8 +24,8 @@ export default {
 
     // determine current view depth, also check to see if the tree
     // has been toggled inactive but kept-alive.
-    let depth = 0
-    let inactive = false
+    let depth = 0 // 标记当前 router-view 组件深度
+    let inactive = false // 是否在keep-alive组件内
     while (parent && parent._routerRoot !== parent) {
       const vnodeData = parent.$vnode ? parent.$vnode.data : {}
       if (vnodeData.routerView) {
@@ -46,7 +46,12 @@ export default {
         // #2301
         // pass props
         if (cachedData.configProps) {
-          fillPropsinData(cachedComponent, data, cachedData.route, cachedData.configProps)
+          fillPropsinData(
+            cachedComponent,
+            data,
+            cachedData.route,
+            cachedData.configProps
+          )
         }
         return h(cachedComponent, data, children)
       } else {
@@ -72,10 +77,7 @@ export default {
     data.registerRouteInstance = (vm, val) => {
       // val could be undefined for unregistration
       const current = matched.instances[name]
-      if (
-        (val && current !== vm) ||
-        (!val && current === vm)
-      ) {
+      if ((val && current !== vm) || (!val && current === vm)) {
         matched.instances[name] = val
       }
     }
@@ -89,7 +91,8 @@ export default {
     // register instance in init hook
     // in case kept-alive component be actived when routes changed
     data.hook.init = (vnode) => {
-      if (vnode.data.keepAlive &&
+      if (
+        vnode.data.keepAlive &&
         vnode.componentInstance &&
         vnode.componentInstance !== matched.instances[name]
       ) {
@@ -107,23 +110,23 @@ export default {
     if (configProps) {
       extend(cache[name], {
         route,
-        configProps
+        configProps,
       })
       fillPropsinData(component, data, route, configProps)
     }
 
     return h(component, data, children)
-  }
+  },
 }
 
-function fillPropsinData (component, data, route, configProps) {
+function fillPropsinData(component, data, route, configProps) {
   // resolve props
-  let propsToPass = data.props = resolveProps(route, configProps)
+  let propsToPass = (data.props = resolveProps(route, configProps))
   if (propsToPass) {
     // clone to prevent mutation
     propsToPass = data.props = extend({}, propsToPass)
     // pass non-declared props as attrs
-    const attrs = data.attrs = data.attrs || {}
+    const attrs = (data.attrs = data.attrs || {})
     for (const key in propsToPass) {
       if (!component.props || !(key in component.props)) {
         attrs[key] = propsToPass[key]
@@ -133,7 +136,7 @@ function fillPropsinData (component, data, route, configProps) {
   }
 }
 
-function resolveProps (route, config) {
+function resolveProps(route, config) {
   switch (typeof config) {
     case 'undefined':
       return
@@ -148,7 +151,7 @@ function resolveProps (route, config) {
         warn(
           false,
           `props in "${route.path}" is a ${typeof config}, ` +
-          `expecting an object, function or boolean.`
+            `expecting an object, function or boolean.`
         )
       }
   }

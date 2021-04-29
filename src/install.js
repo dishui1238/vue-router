@@ -18,6 +18,7 @@ export function install (Vue) {
     }
   }
 
+  // 此钩子每次创建组件都会调用
   Vue.mixin({
     beforeCreate () {
       if (isDef(this.$options.router)) {
@@ -35,6 +36,7 @@ export function install (Vue) {
     }
   })
 
+  // 组件可以通过 this.$router 访问路由信息
   Object.defineProperty(Vue.prototype, '$router', {
     get () { return this._routerRoot._router }
   })
